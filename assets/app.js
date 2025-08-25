@@ -285,7 +285,6 @@ const App = {
       if(to.name==='home'){
         setHead({ title:'Каталог — ByteMarket', description:'ByteMarket — магазин техники.' });
       }
-      // закрываем каталог после перехода
       isCatalogOpen.value = false;
       isMobileOpen.value = false;
     });
