@@ -48,6 +48,9 @@
               </div>
             </div>
           </div>
+          <form class="form-inline mr-3" @submit.prevent="goSearch">
+            <input type="search" class="form-control form-control-sm" v-model="searchQuery" placeholder="Поиск">
+          </form>
 
           <a class="text-muted mr-4 phone" href="tel:+79061030074"><i class="bi bi-telephone-outbound mr-1"></i> +7 (906) 10‑300‑74</a>
           <router-link class="btn btn-outline-light" to="/cart" @click.prevent="addedInfo()">Корзина <span class="badge badge-light ml-1">{{ cartCount }}</span></router-link>
@@ -62,6 +65,9 @@
       <!-- Mobile panel -->
       <div class="mobile-panel d-md-none" v-show="isMobileOpen">
         <div class="container pb-3">
+          <form class="mb-2" @submit.prevent="goSearch">
+            <input type="search" class="form-control" v-model="searchQuery" placeholder="Поиск">
+          </form>
           <button class="btn btn-block btn-neon mb-2" @click="toggleCatalog">Каталог</button>
           <div class="catalog-menu shadow mb-3" v-show="isCatalogOpen">
             <div class="d-flex flex-wrap p-2">

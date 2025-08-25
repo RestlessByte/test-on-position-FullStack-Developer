@@ -1,5 +1,5 @@
 const { createApp, ref, computed, watch, onMounted } = Vue;
-const { createRouter, createWebHashHistory } = VueRouter;
+const { createRouter, createWebHashHistory, useRoute } = VueRouter;
 
 /* ---------- Utils ---------- */
 function slugify(text){
@@ -247,6 +247,58 @@ const CartPage = {
   `
 };
 
+const SearchPage = {
+  name:'SearchPage',
+  setup(){
+    const route = useRoute();
+    const query = computed(()=> route.query.q || '');
+    watch(query, q => {
+      setHead({
+        title: q ? `Поиск: ${q} — ByteMarket` : 'Поиск — ByteMarket',
+        description: q ? `Результаты поиска по запросу ${q}.` : 'Поиск по товарам магазина ByteMarket.'
+      });
+    }, { immediate:true });
+
+    const results = computed(()=>{
+      const q = query.value.toLowerCase();
+      return seedProducts.filter(p => p.name.toLowerCase().includes(q));
+    });
+
+    const addToCart = (prod)=>{
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      cart.push({ slug: prod.slug, qty: 1 });
+      localStorage.setItem('cart', JSON.stringify(cart));
+      window.dispatchEvent(new CustomEvent('cart:update'));
+      window.dispatchEvent(new CustomEvent('cart:added', { detail: prod.name }));
+      $('#addedModal').modal('show');
+    };
+
+    return { query, results, fmtPrice, addToCart };
+  },
+  template: `
+  <div>
+    <h2 class="mb-4">Поиск: "{{ query }}"</h2>
+    <div v-if="results.length" class="row">
+      <div v-for="p in results" :key="p.slug" class="col-6 col-md-4 mb-4 d-flex">
+        <div class="card w-100">
+          <router-link :to="{name:'product', params:{slug:p.slug}}">
+            <img class="card-img-top" :src="p.image" :alt="p.name" loading="lazy">
+          </router-link>
+          <div class="card-body d-flex flex-column">
+            <h6 class="card-title flex-grow-1">{{ p.name }}</h6>
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="price">{{ fmtPrice(p.price) }}</div>
+              <button class="btn btn-neon btn-sm" @click="addToCart(p)"><i class="bi bi-bag-plus mr-1"></i> В корзину</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-else class="text-muted">Ничего не найдено.</div>
+  </div>
+  `
+};
+
 const NotFound = { template:`<div class="py-5 text-center"><h5>Страница не найдена</h5><router-link to="/">На главную</router-link></div>` };
 
 /* ---------- Router ---------- */
@@ -255,6 +307,7 @@ const routes = [
   { path:'/c/:slug', name:'category', component: CategoryPage, props:true },
   { path:'/product/:slug', name:'product', component: ProductPage, props:true },
   { path:'/cart', name:'cart', component: CartPage },
+  { path:'/search', name:'search', component: SearchPage },
   { path:'/:pathMatch(.*)*', component: NotFound },
 ];
 const router = createRouter({
@@ -269,6 +322,7 @@ const App = {
     const isMobileOpen = ref(false);
     const cartCount = ref( (JSON.parse(localStorage.getItem('cart') || '[]')).length );
     const lastAddedName = ref('');
+    const searchQuery = ref('');
 
     const categories = seedCategories.map(c => ({ ...c, slug: c.slug || slugify(c.name) }));
 
@@ -277,6 +331,12 @@ const App = {
     function toggleMobile(){ isMobileOpen.value = !isMobileOpen.value; }
     function closeAllMobile(){ isMobileOpen.value=false; isCatalogOpen.value=false; }
     function addedInfo(){}
+    function goSearch(){
+      if(!searchQuery.value.trim()) return;
+      router.push({ name:'search', query:{ q: searchQuery.value } });
+      isCatalogOpen.value = false;
+      isMobileOpen.value = false;
+    }
 
     window.addEventListener('cart:update', ()=> cartCount.value = (JSON.parse(localStorage.getItem('cart') || '[]')).length );
     window.addEventListener('cart:added', (e)=> { lastAddedName.value = e.detail; });
@@ -285,12 +345,14 @@ const App = {
       if(to.name==='home'){
         setHead({ title:'Каталог — ByteMarket', description:'ByteMarket — магазин техники.' });
       }
+      searchQuery.value = to.query.q || '';
       isCatalogOpen.value = false;
       isMobileOpen.value = false;
     });
 
-    return { categories, isCatalogOpen, isMobileOpen, toggleCatalog, openCatalog, toggleMobile, closeAllMobile, addedInfo, cartCount, lastAddedName };
+    return { categories, isCatalogOpen, isMobileOpen, toggleCatalog, openCatalog, toggleMobile, closeAllMobile, addedInfo, cartCount, lastAddedName, searchQuery, goSearch };
   }
 };
 
 createApp(App).use(router).mount('#app');
+// EOF
