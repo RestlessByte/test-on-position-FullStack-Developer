@@ -39,7 +39,7 @@
                       :key="c.slug"
                       class="catalog-link"
                       :to="{ name: 'category', params: { slug: c.slug } }"
-                      @click.native="isCatalogOpen=false"
+                      @click="isCatalogOpen=false"
                     >
                       <i class="bi bi-folder2-open mr-2"></i>{{ c.name }}
                     </router-link>
@@ -70,7 +70,7 @@
                 :key="c.slug"
                 class="catalog-link"
                 :to="{ name: 'category', params: { slug: c.slug } }"
-                @click.native="closeAllMobile"
+                @click="closeAllMobile"
               >
                 <i class="bi bi-folder2-open mr-2"></i>{{ c.name }}
               </router-link>
@@ -79,7 +79,7 @@
           <a class="btn btn-outline-light btn-block mb-2" href="tel:+79061030074">
             <i class="bi bi-telephone-outbound mr-1"></i> Позвонить
           </a>
-          <router-link class="btn btn-outline-light btn-block" to="/cart" @click.native="closeAllMobile">Корзина <span class="badge badge-light ml-1">{{ cartCount }}</span></router-link>
+          <router-link class="btn btn-outline-light btn-block" to="/cart" @click="closeAllMobile">Корзина <span class="badge badge-light ml-1">{{ cartCount }}</span></router-link>
         </div>
       </div>
     </header>

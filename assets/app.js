@@ -3,11 +3,9 @@ const { createRouter, createWebHashHistory } = VueRouter;
 
 /* ---------- Utils ---------- */
 function slugify(text){
-  const map = {
-    а:'a', б:'b', в:'v', г:'g', д:'d', е:'e', ё:'e', ж:'zh', з:'z', и:'i', й:'y',
+  const map = { а:'a', б:'b', в:'v', г:'g', д:'d', е:'e', ё:'e', ж:'zh', з:'z', и:'i', й:'y',
     к:'k', л:'l', м:'m', н:'n', о:'o', п:'p', р:'r', с:'s', т:'t', у:'u', ф:'f',
-    х:'h', ц:'c', ч:'ch', ш:'sh', щ:'sch', ъ:'', ы:'y', ь:'', э:'e', ю:'yu', я:'ya'
-  };
+    х:'h', ц:'c', ч:'ch', ш:'sh', щ:'sch', ъ:'', ы:'y', ь:'', э:'e', ю:'yu', я:'ya' };
   return String(text || '')
     .toLowerCase()
     .replace(/[а-яё]/g, s => map[s] || s)
@@ -94,16 +92,17 @@ const CategoryPage = {
       const start = (page.value - 1) * pageSize;
       return products.value.slice(start, start + pageSize);
     });
+    const catObj = computed(()=> seedCategories.find(c=>c.slug===props.slug));
+    const catName = computed(()=> catObj.value ? catObj.value.name : props.slug);
+
     watch(()=>props.slug, ()=>{
       page.value = 1;
-      const cat = seedCategories.find(c=>c.slug===props.slug);
       setHead({
-        title: `${cat ? cat.name : 'Категория'} — ByteMarket`,
-        description: `Товары категории ${cat ? cat.name : ''} по выгодным ценам.`
+        title: `${catName.value || 'Категория'} — ByteMarket`,
+        description: `Товары категории ${catName.value || ''} по выгодным ценам.`
       });
     }, { immediate:true });
 
-    // sync query ?page=
     function go(p){
       p = Math.min(Math.max(1, p), pages.value);
       const url = new URL(location.href);
@@ -122,11 +121,11 @@ const CategoryPage = {
       $('#addedModal').modal('show');
     };
 
-    return { fmtPrice, page, pages, pageItems, go, addToCart };
+    return { fmtPrice, page, pages, pageItems, go, addToCart, catName };
   },
   template: `
   <div>
-    <h2 class="mb-4 text-wrap">{{ ($route.params.slug) }}</h2>
+    <h2 class="mb-4 text-wrap">{{ catName }}</h2>
     <div class="row">
       <div v-for="p in pageItems" :key="p.slug" class="col-6 col-md-4 mb-4 d-flex">
         <div class="card w-100">
@@ -277,22 +276,22 @@ const App = {
     function openCatalog(v){ isCatalogOpen.value = v; }
     function toggleMobile(){ isMobileOpen.value = !isMobileOpen.value; }
     function closeAllMobile(){ isMobileOpen.value=false; isCatalogOpen.value=false; }
-    function addedInfo(){ /* noop, but makes header button consistent */ }
+    function addedInfo(){}
 
     window.addEventListener('cart:update', ()=> cartCount.value = (JSON.parse(localStorage.getItem('cart') || '[]')).length );
     window.addEventListener('cart:added', (e)=> { lastAddedName.value = e.detail; });
 
     router.afterEach((to)=>{
-      // Set titles for categories/products handled in components; fallback:
       if(to.name==='home'){
         setHead({ title:'Каталог — ByteMarket', description:'ByteMarket — магазин техники.' });
       }
+      // закрываем каталог после перехода
+      isCatalogOpen.value = false;
+      isMobileOpen.value = false;
     });
 
     return { categories, isCatalogOpen, isMobileOpen, toggleCatalog, openCatalog, toggleMobile, closeAllMobile, addedInfo, cartCount, lastAddedName };
   }
 };
 
-createApp(App)
-  .use(router)
-  .mount('#app');
+createApp(App).use(router).mount('#app');
