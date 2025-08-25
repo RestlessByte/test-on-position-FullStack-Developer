@@ -1,0 +1,106 @@
+:root{
+  --bg:#070812;
+  --panel: rgba(13,17,31,.8);
+  --panel-strong: rgba(16,20,40,.9);
+  --text:#e9ecff;
+  --muted:#9aa3c7;
+  --primary:#7c4dff;
+  --primary2:#00e5ff;
+  --ring:#8a2eff;
+  --radius:16px;
+}
+html,body{height:100%}
+body{
+  background:
+    radial-gradient(1200px 500px at 10% -10%, rgba(124,77,255,.18), transparent 60%),
+    radial-gradient(900px 400px at 90% -15%, rgba(0,229,255,.12), transparent 60%),
+    var(--bg);
+  color:var(--text);
+}
+a{color:inherit}
+a:hover{color:var(--primary2)}
+
+.site-header{
+  position:sticky; top:0; z-index:1020;
+  background: linear-gradient(180deg, rgba(7,8,18,.9), rgba(7,8,18,.65));
+  backdrop-filter: blur(10px) saturate(140%);
+}
+.brand-mark{
+  width:28px;height:28px;border-radius:8px;
+  background: conic-gradient(from 120deg at 50% 50%, var(--primary), var(--primary2));
+  box-shadow:0 0 24px rgba(124,77,255,.6);
+}
+.brand-text{font-weight:800; letter-spacing:.5px}
+
+.btn-neon{
+  background: linear-gradient(90deg, var(--primary), var(--primary2));
+  color:#fff; border:none;
+  border-radius:12px; padding:.55rem 1rem;
+  box-shadow:0 0 18px rgba(124,77,255,.35);
+}
+.btn-neon:hover{opacity:.9;color:#fff}
+
+.catalog{position:relative}
+.catalog-menu{
+  position:absolute; left:0; top:120%;
+  width:560px; background:var(--panel);
+  border-radius:16px; border:1px solid rgba(255,255,255,.08);
+}
+.catalog-link{
+  display:inline-flex; align-items:center;
+  padding:.5rem .75rem; margin:.25rem;
+  border-radius:10px; background:rgba(255,255,255,.04);
+  color:var(--text); text-decoration:none;
+}
+.catalog-link:hover{background:rgba(255,255,255,.08); text-decoration:none}
+
+.mobile-panel{background:var(--panel-strong); border-top:1px solid rgba(255,255,255,.08)}
+.phone{white-space:nowrap}
+
+.card{
+  background: rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius: var(--radius);
+  overflow:hidden;
+}
+.card .price{font-weight:700; font-size:1.1rem}
+.card .btn{border-radius:10px}
+
+.badge-green{
+  background:linear-gradient(90deg,#34d399,#10b981);
+  color:#06281f;
+}
+
+.site-footer{
+  background: linear-gradient(180deg, rgba(7,8,18,.6), rgba(7,8,18,.9));
+  border-top:1px solid rgba(255,255,255,.08)
+}
+
+.glass{
+  background: rgba(20,24,40,.9);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;
+}
+
+.hero{
+  background:linear-gradient(135deg, rgba(124,77,255,.12), rgba(0,229,255,.10));
+  border:1px dashed rgba(255,255,255,.08);
+  border-radius:16px;
+}
+.hero h1{font-weight:800}
+
+.pagination .page-link{
+  background:rgba(255,255,255,.05); border:none; color:var(--text)
+}
+.pagination .page-item.active .page-link{
+  background:linear-gradient(90deg, var(--primary), var(--primary2));
+  color:#fff; border:none;
+}
+.product-image{
+  background: #1b213d;
+  border-radius:12px;
+}
+
+@media (hover:hover){
+  .catalog:hover .catalog-menu{display:block}
+}
